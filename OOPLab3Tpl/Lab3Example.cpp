@@ -8,29 +8,50 @@
 #endif
 using namespace std;
 
-class Icosahedron {
-	double a; // side of the icosahedron
+class Paralelogram
+{
+private:
+	double a, b; //сторони паралелограма(b-бічна сторона, а-основа)
+	double h; //висота паралелограма, опущена на основу
 	unsigned int color;
+
 public:
-	Icosahedron() : a(1.0), color(0) {}
-	Icosahedron(double ai) : a(ai), color(0) {}
-	Icosahedron(int ic) : a(1.0) { if (ic >= 0) color = ic; else color = 0; }
-	Icosahedron(double a, int c) {
+	Paralelogram() : a(1.0), b(3.0), h(2.0), color(0) {}
+	Paralelogram(double ai) : a(ai), b(ai), h(ai), color(0) {}
+	Paralelogram(int ic) : a(1.0), b(3.0), h(2.0) { if (ic >= 0) color = ic; else color = 0; }
+	Paralelogram(double a, double b, double h, int c) {
 		this->a = a;
-		if (c >= 0) color = c; else color = 0;
+		this->b = b;
+		this->h = h;
+		if (c >= 0) color = c;
+		else color = 0;
 	}
-	double getA() const
+	double getABH() const
 	{
-		return a;
+		return a, b, h;
 	}
-	void setA(double a)
+	void setABH(double a, double b, double h)
 	{
 		if (a < 0 || a > 1.e+100)
 		{
-			cout << " Error set  a \n";
+			cout << " Error set a \n";
 			return;
 		}
 		this->a = a;
+
+		if (b < 0 || b > 1.e+100)
+		{
+			cout << " Error set b \n";
+			return;
+		}
+		this->b = b;
+
+		if (h < 0 || h > 1.e+100)
+		{
+			cout << " Error set h \n";
+			return;
+		}
+		this->h = h;
 	}
 	double getColor() const
 	{
@@ -40,45 +61,43 @@ public:
 	{
 		if (c < 0 || c > 10000)
 		{
-			cout << " Error set  color \n";
+			cout << " Error set color \n";
 			return;
 		}
 		this->color = c;
 	}
 	double S() {
-		return 5 * a * a * sqrt(3.0);
+		return a * h;
 	}
-	double V() {
-		return 5 * a * a * a * (3 + sqrt(5.0)) / 12.0;
-	}
-	double r() {
-		return a * (3 + sqrt(5.0)) / (4.0 * sqrt(3.0));
-	}
-	double R() {
-		return sqrt(2 * (5 + sqrt(5.0) * a)) / 4.0;
-	}
-	void printInfo()
-	{
-		cout << "\n a= " << a << " color = " << color;
-		cout << "  S= " << S() << " V = " << V() << "  r= " << r() << " V = " << R() << endl;
+	double P() {
+		return 2 * (a + b);
 	}
 
+	void printInfo()
+	{
+		cout << "\n a= " << a << " b= " << b << " h= " << h << " color = " << color << endl;
+		cout << " S= " << S() << " P = " << P() << endl;
+	}
 };
-int mainExample1()
+
+int mainTask1()
 {
-	Icosahedron obj;
+	Paralelogram obj;
 	obj.printInfo();
-	double in_a; int in_color;
-	cout << " Input side and color Icosahedron  "; cin >> in_a >> in_color;
-	Icosahedron obj1(in_a), obj2(in_color), obj3(in_a, in_color);
+	double in_a, in_b, in_h;
+	int in_color;
+	cout << " Input a, b, h and color of Paralelogram \n"; cin >> in_a >> in_b >> in_h >> in_color;
+	Paralelogram obj1(in_a), obj2(in_b), obj3(in_h), obj4(in_color), obj5(in_a, in_b, in_h, in_color);
 	obj1.printInfo();
 	obj2.printInfo();
 	obj3.printInfo();
-	obj.setA(-5);
+	obj4.printInfo();
+	obj5.printInfo();
+	obj.setABH(-5, -6, -4);
 	obj.printInfo();
-	obj.setA(5);
+	obj.setABH(5, 6, 4);
 	obj.printInfo();
-	obj.setA(2.e100);
+	obj.setABH(2.e100, 4.e100, 3.e100);
 	obj.printInfo();
 	obj.setColor(-10);
 	obj.printInfo();
@@ -87,7 +106,8 @@ int mainExample1()
 	obj.setColor(10001);
 	obj.printInfo();
 	cout << " End testing \n";
-	return 1;
+	return 0;
+
 }
 
 
@@ -106,6 +126,189 @@ public:
 int  foo::count = 0;
 // Ключове слово static ставиться перед типом способу.В основному використовуються
 //для роботи зі статичними полями класу.
+
+/*
+ЗАВДАННЯ 2
+Створити тип даних - клас вектор, який має вказівник на unsigned int, число елементів і змінну стану. У класі визначити
+o	 конструктор без параметрів( виділяє місце для одного елемента та інінціалізує його в нуль);
+o	конструктор з одним параметром - розмір вектора( виділяє місце та інінціалізує масив значенням нуль);
+o	конструктор із двома параметрами - розмір вектора та значення ініціалізації(виділяє місце (значення перший аргумент) та інінціалізує значенням другого аргументу).
+o	конструктор копій та операцію присвоєння; // !!!
+o	деструктор звільняє пам'ять;
+o	визначити функції друку, додавання;
+У змінну стани встановлювати код помилки, коли не вистачає пам'яті, виходить за межі масиву. Передбачити можливість підрахунку числа об'єктів даного типу. Написати програму тестування всіх можливостей цього класу.
+*/
+
+#include<complex>
+using namespace std;
+typedef complex <int> UnsignedInt;
+#define _RE 0
+#define _IM 1
+
+class UnsignedVector
+{
+	UnsignedInt* v;
+	int num;
+	int state = 0;
+public:
+	UnsignedVector() : v(NULL), num(0), state(0) {}
+	UnsignedVector(int n);
+	UnsignedVector(int n, UnsignedInt&);
+	UnsignedVector(int n, UnsignedInt*);
+	UnsignedVector(const UnsignedVector& s);
+	UnsignedVector& operator=(const UnsignedVector& s);
+	~UnsignedVector() {
+		cout << " del vec";
+		if (v) delete[] v;
+	}
+	void Output();
+	void Input();
+	UnsignedVector Add(UnsignedVector& b);
+
+};
+
+UnsignedVector::UnsignedVector(int n) {
+	if (n <= 0) { v = NULL;  num = 0;   state = -1; cout << " Vec --> 0  "; }
+	num = n;
+	v = new UnsignedInt[n];
+	for (int i = 0; i < n; i++) {
+		v[i] = 0;
+		//v[i]._Val[_RE]=0.0; v[i]._Val[_IM]=0.0;  
+	}
+}
+UnsignedVector::UnsignedVector(int n, UnsignedInt& b) {
+	if (n <= 0) { v = NULL;  num = 0;   state = -1; cout << " Vec --> 0  "; }
+	num = n;
+	v = new UnsignedInt[n];
+	for (int i = 0; i < n; i++) {
+		v[i] = b;
+		//v[i]._Val[_RE]=0.0; v[i]._Val[_IM]=0.0;  
+	}
+}
+
+UnsignedVector::UnsignedVector(int n, UnsignedInt* p) {
+	if (n <= 0 || p == NULL) { v = NULL;  num = 0;   state = -1; cout << " Vec --> 0  "; }
+	num = n;
+	v = new UnsignedInt[n];
+	for (int i = 0; i < n; i++) {
+		v[i] = p[i];
+	}
+}
+
+UnsignedVector::UnsignedVector(const UnsignedVector& s) {
+
+	num = s.num;
+	v = new UnsignedInt[num];
+	state = 0;
+	for (int i = 0; i < num; i++)   v[i] = s.v[i];
+}
+
+UnsignedVector& UnsignedVector::operator=(const UnsignedVector& s) {
+
+	if (num != s.num)
+	{
+		if (v) delete[] v;
+		num = s.num;
+		v = new UnsignedInt[num];
+		state = 0;
+	}
+	for (int i = 0; i < num; i++)   v[i] = s.v[i];
+	return *this;
+}
+void UnsignedVector::Input() {
+	if (num == 0) {
+		if (v) delete[] v;
+		do {
+			cout << "Input size Vec\n";
+			cin >> num;
+		} while (num <= 0);
+		v = new UnsignedInt[num];
+	}
+	for (int i = 0; i < num; i++) {
+
+#if defined(_MSC_VER)
+		cout << " v [ " << i << " ] real img  "; cin >> v[i] >> v[i]._Val[_IM];
+#else 
+		double re, im;
+		cout << " v [ " << i << " ] real img  "; cin >> re >> im;
+		v[i].real(re);
+		v[i].imag(im);
+#endif		
+
+
+	}
+}
+
+void UnsignedVector::Output() {
+	if (num != 0) {
+		for (int i = 0; i < num; i++) {
+			cout << " v [ " << i << " ]   " << v[i] << '\t';
+			cout << endl;
+		}
+	}
+}
+
+UnsignedVector UnsignedVector::Add(UnsignedVector& b) {
+	int tnum;
+	tnum = num < b.num ? num : b.num;
+	if (tnum >= 0) {
+		UnsignedVector tmp(tnum);
+		for (int i = 0; i < tnum; i++) tmp.v[i] = v[i] + b.v[i];
+		return tmp;
+	}
+	return UnsignedVector(0);
+}
+
+
+int mainTask2()
+{
+	UnsignedInt a(1, 2), b, c;
+	cout << a << endl;
+#if defined(_MSC_VER)
+	b._Val[_RE] = 21.3;
+	b._Val[_IM] = 22.3;
+#else 
+	b.real(21.3);
+	b.imag(22.3);
+#endif	
+
+	cout << b << endl;
+	c = a + b;
+	cout << c << endl;
+	cout << " Test  " << endl;
+	UnsignedVector VecObj, VecObj1(10);
+	cout << "VecObj \n";
+	VecObj.Output();
+	cout << "VecObj1 \n";
+	VecObj1.Output();
+	cout << " Input a " << endl;
+
+#if defined(_MSC_VER)
+	cin >> a >> a._Val[_IM];
+#else 
+	double re, im;
+	cin >> re >> im;
+	a.real(re);
+	a.imag(im);
+#endif		
+	cout << a << endl;
+	UnsignedVector VecObj2(10, a);
+	VecObj2.Output();
+
+	VecObj.Input();
+	cout << endl;
+	VecObj.Output();
+	VecObj1 = VecObj.Add(VecObj2);
+	VecObj1.Output();
+
+	return 1;
+}
+
+/// 
+
+
+
+
 
 /*  Example 3
 Створити тип даних - клас вектор, який має поля x, y типу double і змінну стану. У класі визначити
@@ -221,247 +424,70 @@ bool Vec2::CompLessAll(Vec2& s) {
 	return false;
 }
 
-int mainExample3()
+int mainTask3()
 {
-#if !defined(CODING_VS_CODE)
-	setlocale(LC_CTYPE, "ukr");
-	cout << "Тестування створенного класу \n";
-	cout << "Тестування конструкторiв \n"; 
-#else 
-	cout << "Testing create class  \n";
-	cout << "Testing crot's  \n";
-#endif
-	Vec2 ObjCDef;
-	ObjCDef.Output();
-	Vec2 ObjP1(10.0);
-	ObjP1.Output();
-	double  a = 1.0, b = 2.0;
-	Vec2  ObjP2(a, b);
-	ObjP2.Output();
-	Vec2 ObjCopy(ObjP2);
-	double* v = nullptr, v2[] = { 1.2, 3.3 };
-	Vec2  ObjP3(v2);
-	if (ObjP3.getState() != OK) cout << " ObjP3  x= 0  y= 0  \n";
-	Vec2  ObjP4(v2);
-	if (ObjP4.getState() != OK) cout << " ObjP4 x= 0  y= 0  \n";
-#if !defined(CODING_VS_CODE)
-	cout << " Кiлькiсть створених об'єктiв Vec2 " << Vec2::getCount() << endl;
-	cout << "Тестування введення \n";
-	ObjCDef.Input();
-	cout << "Тестування функцiй \n";
-	ObjCDef = ObjCDef.Add(ObjP2);
-	ObjCDef.Output();
-	cout << " \n Кiлькiсть створених об'єктiв Vec2 до Sub " << Vec2::getCount() << endl;
-	ObjCDef = ObjCDef.Sub(ObjP2);
-	cout << " \n Кiлькiсть створених об'єктiв Vec2 пiсля Sub " << Vec2::getCount() << endl;
-#else 
-	cout << "Testing input \n";
-	ObjCDef.Input();
-	cout << "Testing gunction \n";
-	ObjCDef = ObjCDef.Add(ObjP2);
-	ObjCDef.Output();
-	cout << " \n Counts create objects Vec2 before  Sub " << Vec2::getCount() << endl;
-	ObjCDef = ObjCDef.Sub(ObjP2);
-	cout << " \n  Counts create objects Vec2 after Sub  " << Vec2::getCount() << endl;
-#endif
-
-	ObjCDef.Output();
-	ObjCDef = ObjCDef.Mul(5);
-	ObjCDef.Output();
-	ObjCDef = ObjCDef.Div(1.3);
-	if (ObjCDef.getState() == STATE::BAD_DIV) cout << "BAD_DIV \n";
-	ObjCDef.Output();
-
-	ObjCDef = ObjCDef.Div(0.0);
-	if (ObjCDef.getState() == STATE::BAD_DIV) cout << "BAD_DIV \n";
-	ObjCDef.Output();
-	cout << "ObjCopy state " << ObjCopy.getState() << endl;
-	if (ObjCopy.CompLessAll(ObjCDef))  cout << "ObjCopy less ObjDef  " << endl;
-
-	
-#if !defined(CODING_VS_CODE)
-	cout << "Завершення  тестування  \n";
-#else 
-	cout << "Completion of testing  \n";
-#endif
+//#if !defined(CODING_VS_CODE)
+//	setlocale(LC_CTYPE, "ukr");
+//	cout << "Тестування створенного класу \n";
+//	cout << "Тестування конструкторiв \n"; 
+//#else 
+//	cout << "Testing create class  \n";
+//	cout << "Testing crot's  \n";
+//#endif
+//	Vec2 ObjCDef;
+//	ObjCDef.Output();
+//	Vec2 ObjP1(10.0);
+//	ObjP1.Output();
+//	double  a = 1.0, b = 2.0;
+//	Vec2  ObjP2(a, b);
+//	ObjP2.Output();
+//	Vec2 ObjCopy(ObjP2);
+//	double* v = nullptr, v2[] = { 1.2, 3.3 };
+//	Vec2  ObjP3(v2);
+//	if (ObjP3.getState() != OK) cout << " ObjP3  x= 0  y= 0  \n";
+//	Vec2  ObjP4(v2);
+//	if (ObjP4.getState() != OK) cout << " ObjP4 x= 0  y= 0  \n";
+//#if !defined(CODING_VS_CODE)
+//	cout << " Кiлькiсть створених об'єктiв Vec2 " << Vec2::getCount() << endl;
+//	cout << "Тестування введення \n";
+//	ObjCDef.Input();
+//	cout << "Тестування функцiй \n";
+//	ObjCDef = ObjCDef.Add(ObjP2);
+//	ObjCDef.Output();
+//	cout << " \n Кiлькiсть створених об'єктiв Vec2 до Sub " << Vec2::getCount() << endl;
+//	ObjCDef = ObjCDef.Sub(ObjP2);
+//	cout << " \n Кiлькiсть створених об'єктiв Vec2 пiсля Sub " << Vec2::getCount() << endl;
+//#else 
+//	cout << "Testing input \n";
+//	ObjCDef.Input();
+//	cout << "Testing gunction \n";
+//	ObjCDef = ObjCDef.Add(ObjP2);
+//	ObjCDef.Output();
+//	cout << " \n Counts create objects Vec2 before  Sub " << Vec2::getCount() << endl;
+//	ObjCDef = ObjCDef.Sub(ObjP2);
+//	cout << " \n  Counts create objects Vec2 after Sub  " << Vec2::getCount() << endl;
+//#endif
+//
+//	ObjCDef.Output();
+//	ObjCDef = ObjCDef.Mul(5);
+//	ObjCDef.Output();
+//	ObjCDef = ObjCDef.Div(1.3);
+//	if (ObjCDef.getState() == STATE::BAD_DIV) cout << "BAD_DIV \n";
+//	ObjCDef.Output();
+//
+//	ObjCDef = ObjCDef.Div(0.0);
+//	if (ObjCDef.getState() == STATE::BAD_DIV) cout << "BAD_DIV \n";
+//	ObjCDef.Output();
+//	cout << "ObjCopy state " << ObjCopy.getState() << endl;
+//	if (ObjCopy.CompLessAll(ObjCDef))  cout << "ObjCopy less ObjDef  " << endl;
+//
+//	
+//#if !defined(CODING_VS_CODE)
+//	cout << "Завершення  тестування  \n";
+//#else 
+//	cout << "Completion of testing  \n";
+//#endif
 	return 1;
 
 }
-/*example  4
-Створити тип даних - клас вектор, який має вказівник на ComplexDouble, число елементів і змінну стану. У класі визначити
-o	 конструктор без параметрів( виділяє місце для одного елемента та інінціалізує його в нуль);
-o	конструктор з одним параметром - розмір вектора( виділяє місце та інінціалізує масив значенням нуль);
-o	конструктор із двома параметрами - розмір вектора та значення ініціалізації(виділяє місце (значення перший аргумент) та інінціалізує значенням другого аргументу).
-o	конструктор копій та операцію присвоєння; // !!!
-o	деструктор звільняє пам'ять;
-o	визначити функції друку, додавання;
-У змінну стани встановлювати код помилки, коли не вистачає пам'яті, виходить за межі масиву. Передбачити можливість підрахунку числа об'єктів даного типу. Написати програму тестування всіх можливостей цього класу.
-*/
-
-#include<complex>
-using namespace std;
-typedef complex<double> ComplexDouble;
-#define _RE 0
-#define _IM 1
-
-class ComplexVector
-{
-	ComplexDouble* v;
-	int num;
-	int state = 0;
-public:
-	ComplexVector() : v(NULL), num(0), state(0) {}
-	ComplexVector(int n);
-	ComplexVector(int n, ComplexDouble&);
-	ComplexVector(int n, ComplexDouble*);
-	ComplexVector(const ComplexVector& s);
-	ComplexVector& operator=(const ComplexVector& s);
-	~ComplexVector() {
-		cout << " del vec";
-		if (v) delete[] v;
-	}
-	void Output();
-	void Input();
-	ComplexVector Add(ComplexVector& b);
-
-};
-
-ComplexVector::ComplexVector(int n) {
-	if (n <= 0) { v = NULL;  num = 0;   state = -1; cout << " Vec --> 0  "; }
-	num = n;
-	v = new ComplexDouble[n];
-	for (int i = 0; i < n; i++) {
-		v[i] = 0.0;
-		//v[i]._Val[_RE]=0.0; v[i]._Val[_IM]=0.0;  
-	}
-}
-ComplexVector::ComplexVector(int n, ComplexDouble& b) {
-	if (n <= 0) { v = NULL;  num = 0;   state = -1; cout << " Vec --> 0  "; }
-	num = n;
-	v = new ComplexDouble[n];
-	for (int i = 0; i < n; i++) {
-		v[i] = b;
-		//v[i]._Val[_RE]=0.0; v[i]._Val[_IM]=0.0;  
-	}
-}
-
-ComplexVector::ComplexVector(int n, ComplexDouble* p) {
-	if (n <= 0 || p == NULL) { v = NULL;  num = 0;   state = -1; cout << " Vec --> 0  "; }
-	num = n;
-	v = new ComplexDouble[n];
-	for (int i = 0; i < n; i++) {
-		v[i] = p[i];
-	}
-}
-
-ComplexVector::ComplexVector(const ComplexVector& s) {
-
-	num = s.num;
-	v = new ComplexDouble[num];
-	state = 0;
-	for (int i = 0; i < num; i++)   v[i] = s.v[i];
-}
-
-ComplexVector& ComplexVector::operator=(const ComplexVector& s) {
-
-	if (num != s.num)
-	{
-		if (v) delete[] v;
-		num = s.num;
-		v = new ComplexDouble[num];
-		state = 0;
-	}
-	for (int i = 0; i < num; i++)   v[i] = s.v[i];
-	return *this;
-}
-void ComplexVector::Input() {
-	if (num == 0) {
-		if (v) delete[] v;
-		do {
-			cout << "Input size Vec\n";
-			cin >> num;
-		} while (num <= 0);
-		v = new ComplexDouble[num];
-	}
-	for (int i = 0; i < num; i++) {
-
-#if defined(_MSC_VER)
-cout << " v [ " << i << " ] real img  "; cin >> v[i] >> v[i]._Val[_IM];
-#else 
-double re,im;
-cout << " v [ " << i << " ] real img  "; cin >> re>>im;
-v[i].real(re); 
-v[i].imag(im);
-#endif		
-		
-		
-	}
-}
-
-void ComplexVector::Output() {
-	if (num != 0) {
-		for (int i = 0; i < num; i++) {
-			cout << " v [ " << i << " ]   " << v[i] << '\t';
-			cout << endl;
-		}
-	}
-}
-
-ComplexVector ComplexVector::Add(ComplexVector& b) {
-	int tnum;
-	tnum = num < b.num ? num : b.num;
-	if (tnum >= 0) {
-		ComplexVector tmp(tnum);
-		for (int i = 0; i < tnum; i++) tmp.v[i] = v[i] + b.v[i];
-		return tmp;
-	}
-	return ComplexVector(0);
-}
-
-
-int mainExample4()
-{
-	ComplexDouble a(1.0, 2), b, c;
-	cout << a << endl;
-#if defined(_MSC_VER)
-    b._Val[_RE] = 21.3;
-	b._Val[_IM] = 22.3;
-#else 
-    b.real( 21.3);
-	b.imag (22.3);
-#endif	
-	
-	cout << b << endl;
-	c = a + b;
-	cout << c << endl;
-	cout << " Test  " << endl;
-	ComplexVector VecObj, VecObj1(10);
-	cout << "VecObj \n";
-	VecObj.Output();
-	cout << "VecObj1 \n";
-	VecObj1.Output();
-	cout << " Input a " << endl;
-
-#if defined(_MSC_VER)
- cin >> a >> a._Val[_IM];
-#else 
-double re,im;
-cin >> re>>im;
-a.real(re); 
-a.imag(im);
-#endif		
-	cout << a << endl;
-	ComplexVector VecObj2(10, a);
-	VecObj2.Output();
-
-	VecObj.Input();
-	cout << endl;
-	VecObj.Output();
-	VecObj1 = VecObj.Add(VecObj2);
-	VecObj1.Output();
-
-	return 1;
-}
-
-/// 
 

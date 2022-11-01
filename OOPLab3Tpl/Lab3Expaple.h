@@ -1,4 +1,4 @@
 #pragma once
-int mainExample1();
-int mainExample3();
-int mainExample4();
+int mainTask1();
+int mainTask2();
+int mainTask3();
