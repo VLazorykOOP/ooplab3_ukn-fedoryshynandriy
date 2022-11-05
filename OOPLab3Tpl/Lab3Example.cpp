@@ -292,7 +292,8 @@ int mainTask2()
 o конструктор без параметрів( виділяє місце для матриці 3 на 3 елемента та інінціалізує його в нуль);
 o конструктор з одним параметром – розмір n матриці (виділяє місце n на n та інінціалізує матрицю значенням нуль); 
 o конструктор із трьома розміри матриці (n , m) та значення ініціалізації value (виділяє місце перші аргументи та інінціалізує значенням третього аргументу - value); 
-o конструктор копій та операцію присвоєння; // !!! o деструктор звільняє пам'ять. o визначити функцію, яка присвоює елементу масиву деяке значення (параметр за замовчуванням);
+o конструктор копій та операцію присвоєння; // !!!
+o деструктор звільняє пам'ять. o визначити функцію, яка присвоює елементу масиву деяке значення (параметр за замовчуванням);
 o функцію яка одержує деякий елемент матриці за індексами i та j;
 o визначити функції друку, додавання, множення, віднімання, які здійснюють ці арифметичні операції з даними цього класу;
 o визначити функції порівняння: більше, менше або рівно, які повертають true або false. 
@@ -300,173 +301,183 @@ o визначити функції порівняння: більше, менш
 Передбачити можливість підрахунку числа об'єктів даного типу. Написати програму тестування всіх можливостей цього класу..
 */
 
-enum STATE {
-	OK, BAD_INIT, BAD_DIV
-};
+#include <iostream>
+using namespace std;
 
-class Vec2
+//клас Матриця
+template <typename T>
+class MATRIX
 {
-	double  x, y;
-	int state;
-	static int count;
+private:
+	T** M; // матриця
+	int m; // к-сть рядків
+	int n;  // к-сть стовпців
+	
 public:
-	Vec2() : x(0), y(0) {
-		state = OK; count++;
-	}   // 	 конструктор без параметрів
-	Vec2(double iv) : x(iv), y(iv) {
-		state = OK; count++;
+	// конструктори
+	//конструктор без параметрів
+	MATRIX() 
+	{
+		n = m = 0;
+		M = nullptr; 
 	}
-	Vec2(double ix, double iy);
-	Vec2(double* v);
-	~Vec2() {
-		count--;
-		cout << " state Vec " << state;
-		cout << " Vec delete \n";
+	//конструктор з одним параметром
+	MATRIX( int _n)
+	{
+		n = _n;
+		m =n = _n;
+		M = nullptr;
 	}
-	Vec2(const Vec2&);
-	Vec2 Add(Vec2& d);
-	Vec2 Sub(Vec2& d);
-	Vec2 Mul(double d);
-	Vec2 Div(double d);
-	void Input();   //  !!! Без первантаження операцій    
-	void Output();  //  !!! Без первантаження операцій
-	bool CompLessAll(Vec2& s);
-	static int getCount() {
-		if (count <= 0) cout << " Немає об'єктів Vec2 ";
-		return count;
-	}
-	int getState() { return state; }
-};
-int Vec2::count = 0;
-Vec2::Vec2(double ix, double iy) {
-	x = ix; y = iy;
-	state = OK;
-	count++;
-}
-Vec2::Vec2(const Vec2& s) {
-	if (this == &s) return;
-	x = s.x; y = s.y; state = OK;
-	count++;
-};
-Vec2::Vec2(double* v) {
-	if (v == nullptr) {
-		state = BAD_INIT; x = 0; y = 0;
-	}
-	else {
-		x = v[0]; y = v[1];
-		state = OK;
-	}
-	count++;
-}
-void Vec2::Input() {
-	cout << " Input  x y ";
-	cin >> x >> y;
-}
-void Vec2::Output() {
-	cout << " x =" << x << " y = " << y << " state  " << state << endl;
-}
 
-Vec2 Vec2::Add(Vec2& s) {
-	Vec2 tmp;
-	tmp.x = x + s.x;
-	tmp.y = y + s.y;
-	return tmp;
-}
+	// конструктор з трьома параметрами
+	MATRIX(int _m, int _n)
+	{
+		m = _m;
+		n = _n;
 
-Vec2 Vec2::Sub(Vec2& s) {
-	Vec2 tmp;
-	tmp.x = x - s.x;
-	tmp.y = y - s.y;
-	return tmp;
-}
-Vec2 Vec2::Div(double d) {
-	Vec2 tmp;
-	if (fabs(d) < 1.e-25) {
-		tmp.state = BAD_DIV;
-		cout << " Error div \n";
+		// Виділити пам'ять для матриці
+		// Виділити пам'ять для масиву покажчиків
+		M = (T**) new T * [m]; // к-сть рядків, к-сть покажчиків
+
+		// Виділити пам'ять для кожного покажчика
+		for (int i = 0; i < m; i++)
+			M[i] = (T*)new T[n];
+
+		// Заповнити масив M нулями
+		for (int i = 0; i < m; i++)
+			for (int j = 0; j < n; j++)
+				M[i][j] = 0;
+	}
+
+	// Конструктор копіювання
+	MATRIX(const MATRIX& _M)
+	{
+		// Створюється новий об'єкт для якого виділяється пам'ять
+		// Копіювання даних *this <= _M
+		m = _M.m;
+		n = _M.n;
+
+		// Виділити пам'ять для M
+		M = (T**) new T * [m]; // к-сть рядків, к-сть покажчиків
+		for (int i = 0; i < m; i++)
+			M[i] = (T*) new T[n];
+
+		// заповнити значеннями
+		for (int i = 0; i < m; i++)
+			for (int j = 0; j < n; j++)
+				M[i][j] = _M.M[i][j];
+	}
+
+	// методи доступу
+	T GetMij(int i, int j)
+	{
+		if ((m > 0) && (n > 0))
+			return M[i][j];
+		else
+			return 0;
+	}
+
+	void SetMij(int i, int j, T value)
+	{
+		if ((i < 0) || (i >= m))
+			return;
+		if ((j < 0) || (j >= n))
+			return;
+		M[i][j] = value;
+	}
+
+	// метод виводу матриці
+	void Print(const char* ObjName)
+	{
+		cout << "Object: " << ObjName << endl;
+		for (int i = 0; i < m; i++)
+		{
+			for (int j = 0; j < n; j++)
+				cout << M[i][j] << "\t";
+			cout << endl;
+		}
+		cout << "---------------------" << endl << endl;
+	}
+
+	// оператор копіювання
+	MATRIX operator=(const MATRIX& _M)
+	{
+		if (n > 0)
+		{
+			// звільнення пам'яті, виділеної раніше для об'єкту *this
+			for (int i = 0; i < m; i++)
+				delete[] M[i];
+		}
+
+		if (m > 0)
+		{
+			delete[] M;
+		}
+
+		// Копіювання даних M <= _M
+		m = _M.m;
+		n = _M.n;
+
+		// Виділити пам'ять для M знову
+		M = (T**) new T * [m];     
+		for (int i = 0; i < m; i++)
+			M[i] = (T*) new T[n];
+
+		// заповнити значеннями
+		for (int i = 0; i < m; i++)
+			for (int j = 0; j < n; j++)
+				M[i][j] = _M.M[i][j];
 		return *this;
 	}
-	tmp.x = x / d;
-	tmp.y = y / d;
-	return tmp;
-}
-Vec2 Vec2::Mul(double d) {
-	Vec2 tmp;
-	tmp.x = x * d;
-	tmp.y = y * d;
-	return tmp;
-}
 
-bool Vec2::CompLessAll(Vec2& s) {
+	// деструктор
+	~MATRIX()
+	{
+		if (n > 0)
+		{
+			// звільнити попередньо виділену пам'ять для кожного рядка
+			for (int i = 0; i < m; i++)
+				delete[] M[i];
+		}
 
-	if (x < s.x && y < s.y) return true;
-	return false;
-}
+		if (m > 0)
+			delete[] M;
+	}
+};
 
 int mainTask3()
 {
-#if !defined(CODING_VS_CODE)
-	setlocale(LC_CTYPE, "ukr");
-	cout << "Тестування створенного класу \n";
-	cout << "Тестування конструкторiв \n"; 
-#else 
-	cout << "Testing create class  \n";
-	cout << "Testing crot's  \n";
-#endif
-	Vec2 ObjCDef;
-	ObjCDef.Output();
-	Vec2 ObjP1(10.0);
-	ObjP1.Output();
-	double  a = 1.0, b = 2.0;
-	Vec2  ObjP2(a, b);
-	ObjP2.Output();
-	Vec2 ObjCopy(ObjP2);
-	double* v = nullptr, v2[] = { 1.2, 3.3 };
-	Vec2  ObjP3(v2);
-	if (ObjP3.getState() != OK) cout << " ObjP3  x= 0  y= 0  \n";
-	Vec2  ObjP4(v2);
-	if (ObjP4.getState() != OK) cout << " ObjP4 x= 0  y= 0  \n";
-#if !defined(CODING_VS_CODE)
-	cout << " Кiлькiсть створених об'єктiв Vec2 " << Vec2::getCount() << endl;
-	cout << "Тестування введення \n";
-	ObjCDef.Input();
-	cout << "Тестування функцiй \n";
-	ObjCDef = ObjCDef.Add(ObjP2);
-	ObjCDef.Output();
-	cout << " \n Кiлькiсть створених об'єктiв Vec2 до Sub " << Vec2::getCount() << endl;
-	ObjCDef = ObjCDef.Sub(ObjP2);
-	cout << " \n Кiлькiсть створених об'єктiв Vec2 пiсля Sub " << Vec2::getCount() << endl;
-#else 
-	cout << "Testing input \n";
-	ObjCDef.Input();
-	cout << "Testing gunction \n";
-	ObjCDef = ObjCDef.Add(ObjP2);
-	ObjCDef.Output();
-	cout << " \n Counts create objects Vec2 before  Sub " << Vec2::getCount() << endl;
-	ObjCDef = ObjCDef.Sub(ObjP2);
-	cout << " \n  Counts create objects Vec2 after Sub  " << Vec2::getCount() << endl;
-#endif
+	system("chcp 1251");
+	cout << " Task 3\n" <<
+		"Створити клас матриця.Даний клас містить вказівник на int, розміри рядків і стовпців та стан помилки.У класі визначити" <<endl<<
+		"- конструктор без параметрів(виділяє місце для матриці 3 на 3 елемента та інінціалізує його в нуль);" << endl <<
+		"- конструктор з одним параметром – розмір n матриці(виділяє місце n на n та інінціалізує матрицю значенням нуль);" << endl <<
+		"- конструктор із трьома розміри матриці(n, m) та значення ініціалізації value" << endl <<
+		"(виділяє місце перші аргументи та інінціалізує значенням третього аргументу - value);" << endl <<
+		"- конструктор копій та операцію присвоєння; // !!!" << endl <<
+		"- деструктор звільняє память."<<endl<<
+		"- визначити функцію, яка присвоює елементу масиву деяке значення(параметр за замовчуванням); " << endl <<
+		"- функцію яка одержує деякий елемент матриці за індексами i та j;" << endl <<
+		"- визначити функції друку, додавання, множення, віднімання, які здійснюють ці арифметичні операції з даними цього класу;\n" << endl<<
+		"- визначити функції порівняння : більше, менше або рівно, які повертають true або false." << endl <<
+		"У змінну стани встановлювати код помилки, коли не вистачає памяті, виходить за межі матриці. " << endl <<
+		"Передбачити можливість підрахунку числа обєктів даного типу. Написати програму тестування всіх можливостей цього класу.." << endl<<endl;
 
-	ObjCDef.Output();
-	ObjCDef = ObjCDef.Mul(5);
-	ObjCDef.Output();
-	ObjCDef = ObjCDef.Div(1.3);
-	if (ObjCDef.getState() == STATE::BAD_DIV) cout << "BAD_DIV \n";
-	ObjCDef.Output();
+	MATRIX<int> M(3,3);
+	cout << endl;
+	M.Print("Створити матрицю");
 
-	ObjCDef = ObjCDef.Div(0.0);
-	if (ObjCDef.getState() == STATE::BAD_DIV) cout << "BAD_DIV \n";
-	ObjCDef.Output();
-	cout << "ObjCopy state " << ObjCopy.getState() << endl;
-	if (ObjCopy.CompLessAll(ObjCDef))  cout << "ObjCopy less ObjDef  " << endl;
+	// Заповнити матрицю значеннями 
+	int i, j;
+	for (i = 0; i < 2; i++)
+		for (j = 0; j < 3; j++)
+			M.SetMij(i, j, i + j);
 
-	
-#if !defined(CODING_VS_CODE)
-	cout << "Завершення  тестування  \n";
-#else 
-	cout << "Completion of testing  \n";
-#endif
-	return 1;
+	M.Print("Заповнення: елемент= i+j");
 
+	MATRIX<int> M2 = M; // виклик конструктора копіювання
+	M2.Print("Конструктор копіювання");
+
+	return 0;
 }
 
