@@ -139,22 +139,16 @@ o	визначити функції друку, додавання;
 У змінну стани встановлювати код помилки, коли не вистачає пам'яті, виходить за межі масиву. Передбачити можливість підрахунку числа об'єктів даного типу. Написати програму тестування всіх можливостей цього класу.
 */
 
-#include<complex>
-using namespace std;
-typedef complex <int> UnsignedInt;
-#define _RE 0
-#define _IM 1
-
 class UnsignedVector
 {
-	UnsignedInt* v;
+	unsigned int* v;
 	int num;
 	int state = 0;
 public:
 	UnsignedVector() : v(NULL), num(0), state(0) {}
 	UnsignedVector(int n);
-	UnsignedVector(int n, UnsignedInt&);
-	UnsignedVector(int n, UnsignedInt*);
+	UnsignedVector(int n, unsigned int&);
+	UnsignedVector(int n, unsigned int*);
 	UnsignedVector(const UnsignedVector& s);
 	UnsignedVector& operator=(const UnsignedVector& s);
 	~UnsignedVector() {
@@ -168,28 +162,26 @@ public:
 };
 
 UnsignedVector::UnsignedVector(int n) {
-	if (n <= 0) { v = NULL;  num = 0;   state = -1; cout << " Vec --> 0  "; }
+	if (n <= 0) { v = NULL;  num = 0;   state = -1; cout << " Vec --> 0  "; return; }
 	num = n;
-	v = new UnsignedInt[n];
+	v = new unsigned int[n];
 	for (int i = 0; i < n; i++) {
 		v[i] = 0;
-		//v[i]._Val[_RE]=0.0; v[i]._Val[_IM]=0.0;  
 	}
 }
-UnsignedVector::UnsignedVector(int n, UnsignedInt& b) {
-	if (n <= 0) { v = NULL;  num = 0;   state = -1; cout << " Vec --> 0  "; }
+UnsignedVector::UnsignedVector(int n, unsigned int& b) {
+	if (n <= 0) { v = NULL;  num = 0;   state = -1; cout << " Vec --> 0  "; return; }
 	num = n;
-	v = new UnsignedInt[n];
+	v = new unsigned int[n];
 	for (int i = 0; i < n; i++) {
 		v[i] = b;
-		//v[i]._Val[_RE]=0.0; v[i]._Val[_IM]=0.0;  
 	}
 }
 
-UnsignedVector::UnsignedVector(int n, UnsignedInt* p) {
-	if (n <= 0 || p == NULL) { v = NULL;  num = 0;   state = -1; cout << " Vec --> 0  "; }
+UnsignedVector::UnsignedVector(int n, unsigned int* p) {
+	if (n <= 0 || p == NULL) { v = NULL;  num = 0;   state = -1; cout << " Vec --> 0  "; return; }
 	num = n;
-	v = new UnsignedInt[n];
+	v = new unsigned int[n];
 	for (int i = 0; i < n; i++) {
 		v[i] = p[i];
 	}
@@ -198,7 +190,7 @@ UnsignedVector::UnsignedVector(int n, UnsignedInt* p) {
 UnsignedVector::UnsignedVector(const UnsignedVector& s) {
 
 	num = s.num;
-	v = new UnsignedInt[num];
+	v = new unsigned int[num];
 	state = 0;
 	for (int i = 0; i < num; i++)   v[i] = s.v[i];
 }
@@ -209,7 +201,7 @@ UnsignedVector& UnsignedVector::operator=(const UnsignedVector& s) {
 	{
 		if (v) delete[] v;
 		num = s.num;
-		v = new UnsignedInt[num];
+		v = new unsigned int[num];
 		state = 0;
 	}
 	for (int i = 0; i < num; i++)   v[i] = s.v[i];
@@ -222,18 +214,18 @@ void UnsignedVector::Input() {
 			cout << "Input size Vec\n";
 			cin >> num;
 		} while (num <= 0);
-		v = new UnsignedInt[num];
+		v = new unsigned int[num];
 	}
 	for (int i = 0; i < num; i++) {
 
 #if defined(_MSC_VER)
-		cout << " v [ " << i << " ] real img  "; cin >> v[i] >> v[i]._Val[_IM];
+		cout << " v [ " << i << " ] "; cin >> v[i];
 #else 
 		double re, im;
-		cout << " v [ " << i << " ] real img  "; cin >> re >> im;
+		cout << " v [ " << i << " ]"; cin >> re >> im;
 		v[i].real(re);
 		v[i].imag(im);
-#endif		
+#endif    
 
 
 	}
@@ -262,16 +254,8 @@ UnsignedVector UnsignedVector::Add(UnsignedVector& b) {
 
 int mainTask2()
 {
-	UnsignedInt a(1, 2), b, c;
+	unsigned int a(1), b(2), c;
 	cout << a << endl;
-#if defined(_MSC_VER)
-	b._Val[_RE] = 21.3;
-	b._Val[_IM] = 22.3;
-#else 
-	b.real(21.3);
-	b.imag(22.3);
-#endif	
-
 	cout << b << endl;
 	c = a + b;
 	cout << c << endl;
@@ -284,13 +268,13 @@ int mainTask2()
 	cout << " Input a " << endl;
 
 #if defined(_MSC_VER)
-	cin >> a >> a._Val[_IM];
+	cin >> a;
 #else 
 	double re, im;
 	cin >> re >> im;
 	a.real(re);
 	a.imag(im);
-#endif		
+#endif    
 	cout << a << endl;
 	UnsignedVector VecObj2(10, a);
 	VecObj2.Output();
@@ -303,24 +287,19 @@ int mainTask2()
 
 	return 1;
 }
-
-/// 
-
-
-
-
-
-/*  Example 3
-Створити тип даних - клас вектор, який має поля x, y типу double і змінну стану. У класі визначити
-o	конструктор без параметрів(інінціалізує поля в нуль);
-o	конструктор з одним параметром типу double (інінціалізує поля);
-o	конструктор з одним параметром вказівник на тип double (інінціалізує поля x, y значенням масиву за вказівником, якщо вказівник NULL (nulptr) то встановити код помилки);
-o	деструктор із виведенням інформації про стан вектора;
-o	визначити функції друку, додавання, віднімання, векторний добуток які здійснюють ці арифметичні операції з даними цього класу;
-o	функцію ділення на ціле типу double(при діленні на 0 змінити стан, а ділення не виконувати);
-o	визначити функцію порівняння менше які повертають true або false.
-У змінну стани встановлювати код помилки, діленні на 0, при передачі NULL (nulptr) в конструкторі із вказівником. Передбачити можливість підрахунку числа об'єктів даного типу. Написати програму тестування всіх можливостей цього класу.
+/*  Task 3
+Створити клас матриця. Даний клас містить вказівник на int, розміри рядків і стовпців та стан помилки. У класі визначити
+o конструктор без параметрів( виділяє місце для матриці 3 на 3 елемента та інінціалізує його в нуль);
+o конструктор з одним параметром – розмір n матриці (виділяє місце n на n та інінціалізує матрицю значенням нуль); 
+o конструктор із трьома розміри матриці (n , m) та значення ініціалізації value (виділяє місце перші аргументи та інінціалізує значенням третього аргументу - value); 
+o конструктор копій та операцію присвоєння; // !!! o деструктор звільняє пам'ять. o визначити функцію, яка присвоює елементу масиву деяке значення (параметр за замовчуванням);
+o функцію яка одержує деякий елемент матриці за індексами i та j;
+o визначити функції друку, додавання, множення, віднімання, які здійснюють ці арифметичні операції з даними цього класу;
+o визначити функції порівняння: більше, менше або рівно, які повертають true або false. 
+У змінну стани встановлювати код помилки, коли не вистачає пам'яті, виходить за межі матриці. 
+Передбачити можливість підрахунку числа об'єктів даного типу. Написати програму тестування всіх можливостей цього класу..
 */
+
 enum STATE {
 	OK, BAD_INIT, BAD_DIV
 };
@@ -426,67 +405,67 @@ bool Vec2::CompLessAll(Vec2& s) {
 
 int mainTask3()
 {
-//#if !defined(CODING_VS_CODE)
-//	setlocale(LC_CTYPE, "ukr");
-//	cout << "Тестування створенного класу \n";
-//	cout << "Тестування конструкторiв \n"; 
-//#else 
-//	cout << "Testing create class  \n";
-//	cout << "Testing crot's  \n";
-//#endif
-//	Vec2 ObjCDef;
-//	ObjCDef.Output();
-//	Vec2 ObjP1(10.0);
-//	ObjP1.Output();
-//	double  a = 1.0, b = 2.0;
-//	Vec2  ObjP2(a, b);
-//	ObjP2.Output();
-//	Vec2 ObjCopy(ObjP2);
-//	double* v = nullptr, v2[] = { 1.2, 3.3 };
-//	Vec2  ObjP3(v2);
-//	if (ObjP3.getState() != OK) cout << " ObjP3  x= 0  y= 0  \n";
-//	Vec2  ObjP4(v2);
-//	if (ObjP4.getState() != OK) cout << " ObjP4 x= 0  y= 0  \n";
-//#if !defined(CODING_VS_CODE)
-//	cout << " Кiлькiсть створених об'єктiв Vec2 " << Vec2::getCount() << endl;
-//	cout << "Тестування введення \n";
-//	ObjCDef.Input();
-//	cout << "Тестування функцiй \n";
-//	ObjCDef = ObjCDef.Add(ObjP2);
-//	ObjCDef.Output();
-//	cout << " \n Кiлькiсть створених об'єктiв Vec2 до Sub " << Vec2::getCount() << endl;
-//	ObjCDef = ObjCDef.Sub(ObjP2);
-//	cout << " \n Кiлькiсть створених об'єктiв Vec2 пiсля Sub " << Vec2::getCount() << endl;
-//#else 
-//	cout << "Testing input \n";
-//	ObjCDef.Input();
-//	cout << "Testing gunction \n";
-//	ObjCDef = ObjCDef.Add(ObjP2);
-//	ObjCDef.Output();
-//	cout << " \n Counts create objects Vec2 before  Sub " << Vec2::getCount() << endl;
-//	ObjCDef = ObjCDef.Sub(ObjP2);
-//	cout << " \n  Counts create objects Vec2 after Sub  " << Vec2::getCount() << endl;
-//#endif
-//
-//	ObjCDef.Output();
-//	ObjCDef = ObjCDef.Mul(5);
-//	ObjCDef.Output();
-//	ObjCDef = ObjCDef.Div(1.3);
-//	if (ObjCDef.getState() == STATE::BAD_DIV) cout << "BAD_DIV \n";
-//	ObjCDef.Output();
-//
-//	ObjCDef = ObjCDef.Div(0.0);
-//	if (ObjCDef.getState() == STATE::BAD_DIV) cout << "BAD_DIV \n";
-//	ObjCDef.Output();
-//	cout << "ObjCopy state " << ObjCopy.getState() << endl;
-//	if (ObjCopy.CompLessAll(ObjCDef))  cout << "ObjCopy less ObjDef  " << endl;
-//
-//	
-//#if !defined(CODING_VS_CODE)
-//	cout << "Завершення  тестування  \n";
-//#else 
-//	cout << "Completion of testing  \n";
-//#endif
+#if !defined(CODING_VS_CODE)
+	setlocale(LC_CTYPE, "ukr");
+	cout << "Тестування створенного класу \n";
+	cout << "Тестування конструкторiв \n"; 
+#else 
+	cout << "Testing create class  \n";
+	cout << "Testing crot's  \n";
+#endif
+	Vec2 ObjCDef;
+	ObjCDef.Output();
+	Vec2 ObjP1(10.0);
+	ObjP1.Output();
+	double  a = 1.0, b = 2.0;
+	Vec2  ObjP2(a, b);
+	ObjP2.Output();
+	Vec2 ObjCopy(ObjP2);
+	double* v = nullptr, v2[] = { 1.2, 3.3 };
+	Vec2  ObjP3(v2);
+	if (ObjP3.getState() != OK) cout << " ObjP3  x= 0  y= 0  \n";
+	Vec2  ObjP4(v2);
+	if (ObjP4.getState() != OK) cout << " ObjP4 x= 0  y= 0  \n";
+#if !defined(CODING_VS_CODE)
+	cout << " Кiлькiсть створених об'єктiв Vec2 " << Vec2::getCount() << endl;
+	cout << "Тестування введення \n";
+	ObjCDef.Input();
+	cout << "Тестування функцiй \n";
+	ObjCDef = ObjCDef.Add(ObjP2);
+	ObjCDef.Output();
+	cout << " \n Кiлькiсть створених об'єктiв Vec2 до Sub " << Vec2::getCount() << endl;
+	ObjCDef = ObjCDef.Sub(ObjP2);
+	cout << " \n Кiлькiсть створених об'єктiв Vec2 пiсля Sub " << Vec2::getCount() << endl;
+#else 
+	cout << "Testing input \n";
+	ObjCDef.Input();
+	cout << "Testing gunction \n";
+	ObjCDef = ObjCDef.Add(ObjP2);
+	ObjCDef.Output();
+	cout << " \n Counts create objects Vec2 before  Sub " << Vec2::getCount() << endl;
+	ObjCDef = ObjCDef.Sub(ObjP2);
+	cout << " \n  Counts create objects Vec2 after Sub  " << Vec2::getCount() << endl;
+#endif
+
+	ObjCDef.Output();
+	ObjCDef = ObjCDef.Mul(5);
+	ObjCDef.Output();
+	ObjCDef = ObjCDef.Div(1.3);
+	if (ObjCDef.getState() == STATE::BAD_DIV) cout << "BAD_DIV \n";
+	ObjCDef.Output();
+
+	ObjCDef = ObjCDef.Div(0.0);
+	if (ObjCDef.getState() == STATE::BAD_DIV) cout << "BAD_DIV \n";
+	ObjCDef.Output();
+	cout << "ObjCopy state " << ObjCopy.getState() << endl;
+	if (ObjCopy.CompLessAll(ObjCDef))  cout << "ObjCopy less ObjDef  " << endl;
+
+	
+#if !defined(CODING_VS_CODE)
+	cout << "Завершення  тестування  \n";
+#else 
+	cout << "Completion of testing  \n";
+#endif
 	return 1;
 
 }

@@ -4,6 +4,7 @@
 //
 
 #include <iostream>
+using namespace std;
 
 // Ваші файли загловки 
 //
@@ -11,14 +12,33 @@
 int main()
 {
     std::cout << " Lab 3!\n";
-//  Код виконання завдань
-//  Головне меню завдань
-//  Функції та класи можуть знаходитись в інших файлах проекту
 
-    int conv = 1;
-    if (conv == 1) conv = mainTask1();
-    if (conv == 1) conv = mainTask2(); 
-    if (conv == 1) conv = mainTask3();
+    int conv;
+    int task;
+    ask:
+    cout<<endl << "What task to do ? " << endl;
+    cin >> task;
+    switch (task) {
+    case 1:
+        cout << "Task 1"<<endl;
+        mainTask1();
+        goto ask;
+        break;
+       
+    case 2:
+        cout << "Task 2" << endl;
+        mainTask2();
+        goto ask;
+        break;
+       
+    case 3:
+        cout << "Task 3" << endl;
+        mainTask3();
+        goto ask;
+        break;
+        
+        
+    }
 
 }
 
